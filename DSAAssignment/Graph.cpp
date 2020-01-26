@@ -22,17 +22,24 @@ void Graph::generate_graph() {
 	
 }
 string Graph::readCSV(string file_name) {
-	fstream file;
-	file.open("Stations.csv", ios::in);
-	
-	string row;
-	getline(file, row);
-	std::stringstream s_stream(row);
-	string word;
-	string output;
-	
-	while (getline(s_stream, word, ',')) {
-		output += word;
+	ifstream file;
+	file.open("Stations.csv");
+	if (file.is_open()) {
+		string word;
+		string output;
+
+		while (!file.eof()) {
+			string row;
+			getline(file, row);
+			std::stringstream s_stream(row);
+			
+
+			while (getline(s_stream, word, ',')) {
+				output += word;
+			}
+			output += "\n";
+		}
+		return output;
 	}
-	return output;
+	return "";
 }
