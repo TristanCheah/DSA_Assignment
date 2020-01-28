@@ -73,16 +73,39 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 }
 
 string Graph::getLine(KeyType key) {
+	string upperkey;
+	for (int i = 0; i < key.length(); i++) {
+		upperkey += toupper(key[i]);
+	}
+	//cout << "uppercase key: " + upperkey<< endl;
 	string no;
 	string name;
 	string output;
 	int hash = this->hash(key);
+	string linelet;
+	string upperll;
 	if (items[hash] != NULL) {
 		Node* current = items[hash];
-		while (current != NULL) {
+		linelet = current->key;
+		
+		for (int i = 0; i < linelet.length(); i++) {
+			if (isalpha(linelet[i])) {
+				upperll += toupper(linelet[i]);
+			}
+		}
+		//cout << "uppercase line letters: " + upperll << endl;
+		while (current != NULL && upperll == upperkey) {
 			no += current->key + "\n";
 			name += current->item + "\n";
+			linelet = current->key;
 			current = current->next;
+			upperll = "";
+			for (int i = 0; i < linelet.length(); i++) {
+				if (isalpha(linelet[i])) {
+					upperll += toupper(linelet[i]);
+				}
+			}
+			//cout << "uppercase ll: " + upperll << endl;
 		}
 		no += "\n";
 		output = no + name;
