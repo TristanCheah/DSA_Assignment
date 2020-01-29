@@ -114,7 +114,7 @@ string Graph::getLine(KeyType key) {
 }
 
 
-void Graph::readCSV(string file_name) {
+void Graph::readCSV() {
 	ifstream file;
 	file.open("Stations.csv");
 	if (file.is_open()) {
@@ -139,7 +139,57 @@ void Graph::readCSV(string file_name) {
 		}
 	}
 }
+Graph::Node* Graph::find(KeyType key) {
+	int hash = this->hash(key);
+	if (items[hash]->key == key) {
+		return items[hash];
+	}
+	else {
+		Node* current = items[hash];
+		while (current->next != NULL) {
+			if (current->key == key) {
+				return current;
+			}
+			current = current->next;
+		}
+		if (current->key == key) {
+			return current;
+		}
+		else {
+			return NULL;
+		}
+	}
 
+}
+void Graph::generateInterchanges() {
+	ifstream file;
+	file.open("Interchanges.csv");
+	if (file.is_open()) {
+		string key;
+		while (!file.eof()) {
+			string keys_to_add[3];
+			string row;
+			int count = 0;
+			getline(file, row);
+			std::stringstream s_stream(row);
+			while (getline(s_stream, key, ',')) {
+				keys_to_add[count] = key;
+				count++;
+				//find hash record, add to interchanges
+			}
+			for (int i = 0; i < count; i++) {	
+				int key_count = 0;
+				for (int k = 0; k < count; k++) {					
+					if (keys_to_add[k] != this->find(keys_to_add[i])->key) {
+						this->find(keys_to_add[i])->interchanges[key_count] = keys_to_add[k];
+						key_count++;
+					}		
+					
+				}				
+			}
+		}
+	}
+}
 void Graph::print() {
 	for (int i = 0; i < MAX_SIZE; i++) {
 		Node* current = new Node;
