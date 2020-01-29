@@ -4,6 +4,8 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <cmath>
+//#include <math.h>
 
 using namespace std;
 
@@ -11,7 +13,7 @@ int charvalue(char c)
 {
 	if (isalpha(c))
 	{
-		return (int)toupper(c) - (int) 'A';
+		return (int)toupper(c) - (int) 'A' + 1;
 	}
 	else
 		return 0;
@@ -33,8 +35,11 @@ void Graph::generate_graph() {
 
 int Graph::hash(KeyType key) {
 	int hash = 0;
-	for (int i = 0; i < key.length(); i++) {
-		hash += charvalue(key[i]);
+	for (int i = 0; i <key.length(); i++) {
+		double p = pow(26, i);
+		int val = (int)p;
+		hash += charvalue(key[i]) * val; //(int) pow(26.0,i);
+		//cout << hash<<endl;
 	}
 	hash = hash % MAX_SIZE;
 	return hash;
@@ -72,7 +77,7 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 	}
 }
 
-string Graph::getLine(KeyType key) {
+void Graph::getLine(KeyType key) {
 	string upperkey;
 	for (int i = 0; i < key.length(); i++) {
 		upperkey += toupper(key[i]);
@@ -95,8 +100,8 @@ string Graph::getLine(KeyType key) {
 		}
 		//cout << "uppercase line letters: " + upperll << endl;
 		while (current != NULL && upperll == upperkey) {
-			no += current->key + "\n";
-			name += current->item + "\n";
+			cout << "Station No.: " + current->key << endl;
+			cout << "Station Name: " + current->item << endl;
 			linelet = current->key;
 			current = current->next;
 			upperll = "";
@@ -107,10 +112,10 @@ string Graph::getLine(KeyType key) {
 			}
 			//cout << "uppercase ll: " + upperll << endl;
 		}
-		no += "\n";
-		output = no + name;
+		//no += "\n";
+		//output = no + name;
 	}
-	return output;
+	//return output;
 }
 
 

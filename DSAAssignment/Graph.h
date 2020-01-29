@@ -2,9 +2,10 @@
 using namespace std;
 #include <string>
 
-const int MAX_SIZE = 11;
+const int MAX_SIZE = 676;
 typedef string ItemType;
 typedef string KeyType;
+typedef int PriorityType;
 
 class Graph
 {
@@ -12,6 +13,7 @@ private:
 	struct Node {
 		ItemType item;
 		KeyType key;
+		PriorityType Priority;
 		Node* next;
 	};
 	Node *items[MAX_SIZE];
@@ -24,7 +26,8 @@ public:
 	void readCSV(string filename);
 	int hash(KeyType key);
 	bool add(KeyType newKey, ItemType newItem);
-	string getLine(KeyType key);
+	string FindStation(KeyType key);
+	void getLine(KeyType key);
 	void print();
 };
 
