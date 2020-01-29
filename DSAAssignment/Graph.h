@@ -3,6 +3,7 @@ using namespace std;
 #include <string>
 
 const int MAX_SIZE = 676;
+const int MAX_INTERCHANGES = 2;
 typedef string ItemType;
 typedef string KeyType;
 typedef int PriorityType;
@@ -15,6 +16,7 @@ private:
 		KeyType key;
 		PriorityType Priority;
 		Node* next;
+		KeyType interchanges[MAX_INTERCHANGES];
 	};
 	Node *items[MAX_SIZE];
 	int size;
@@ -23,7 +25,11 @@ public:
 	Graph();
 	~Graph();
 	void generate_graph();
-	void readCSV(string filename);
+	void readCSV();
+	void generateInterchanges();
+	void displayStationInfo(string station_name);
+	Node* find(KeyType key);
+	
 	int hash(KeyType key);
 	bool add(KeyType newKey, ItemType newItem);
 	string FindStation(KeyType key);
