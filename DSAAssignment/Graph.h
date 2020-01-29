@@ -25,7 +25,9 @@ public:
 	void generate_graph();
 	void readCSV();
 	void generateInterchanges();
+	void displayStationInfo(string station_name);
 	Node* find(KeyType key);
+	
 	int hash(KeyType key);
 	bool add(KeyType newKey, ItemType newItem);
 	string getLine(KeyType key);

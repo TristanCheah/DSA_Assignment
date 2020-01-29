@@ -113,7 +113,90 @@ string Graph::getLine(KeyType key) {
 	return output;
 }
 
+void Graph::displayStationInfo(string station_name) {
+	KeyType key;
+	int indexes_to_iterate[MAX_SIZE] = {};
+	int counter = 0;
+	for (int i = 0; i < MAX_SIZE; i++) {
+		if (items[i] != NULL) {
+			indexes_to_iterate[counter] = i;
+			counter++;
+		}
+	}//to find 
 
+	for (int i = 0; i < counter; i++) {
+		if (items[indexes_to_iterate[i]]->item == station_name) {
+			key = items[indexes_to_iterate[i]]->key;
+			break;
+		}
+		else {
+			Node* current = items[indexes_to_iterate[i]];
+			while (current->next != NULL) {
+				if (current->item == station_name) {
+					key = current->key;
+					break;
+				}
+				else {
+					current = current->next;
+				}
+			}
+			if (current->item == station_name) {
+				key = current->key;
+				break;
+			}
+			else {
+				key = "";
+			}
+		}
+	}
+
+
+	//ifstream file;
+	//file.open("Stations.csv");
+	//if (file.is_open()) {
+	//	string word;
+	//	while (!file.eof()) {
+	//		string no;
+	//		string Name;
+	//		string row;
+	//		getline(file, row);
+	//		std::stringstream s_stream(row);
+	//		int count = 0;
+	//		while (getline(s_stream, word, ',')) {
+	//			if (count == 0) {
+	//				no = word;
+	//				count++;
+	//			}
+	//			else {
+	//				Name = word;
+	//				if (Name == station_name) {
+	//					key = no; //if name is equal, get key
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+	//file.close();
+	if (key == "") {
+		cout << "No station found" << endl;
+	}
+	else {
+		int hash = this->hash(key);
+		if (this->find(key) == NULL) {
+			cout << "No station found" << endl;
+		}
+		else {
+			cout << "Station found!" << endl;
+			cout << this->find(key)->key << endl;
+			cout << this->find(key)->item << endl;
+			for (int j = 0; j < MAX_INTERCHANGES - 1; j++) {
+				if (this->find(key)->interchanges[j] != "") {
+					cout << "Interchange with " << this->find(key)->interchanges[j] << endl;
+				}
+			}
+		}
+	}
+}
 void Graph::readCSV() {
 	ifstream file;
 	file.open("Stations.csv");
@@ -138,6 +221,7 @@ void Graph::readCSV() {
 			}
 		}
 	}
+	file.close();
 }
 Graph::Node* Graph::find(KeyType key) {
 	int hash = this->hash(key);
@@ -161,6 +245,7 @@ Graph::Node* Graph::find(KeyType key) {
 	}
 
 }
+
 void Graph::generateInterchanges() {
 	ifstream file;
 	file.open("Interchanges.csv");
