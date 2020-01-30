@@ -14,7 +14,7 @@ private:
 	struct Node {
 		ItemType item;
 		KeyType key;
-		//PriorityType Priority;
+		PriorityType priority;
 		Node* next;
 		KeyType interchanges[MAX_INTERCHANGES];
 	};
@@ -30,9 +30,9 @@ public:
 	void displayStationInfo(string station_name);
 	Node* find(KeyType key);
 	int hash(KeyType key);
+	string priority(KeyType key);
 	bool add(KeyType newKey, ItemType newItem);
 	bool addWrite(KeyType newKey, ItemType newItem);
-	string FindStation(KeyType key);
 	void getLine(KeyType key);
 	void print();
 	void write();

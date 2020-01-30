@@ -19,6 +19,15 @@ int charvalue(char c)
 		return 0;
 }
 
+char isno(char c) {
+	if (isdigit(c)) {
+
+		return c;
+	}
+	return '\0';
+
+}
+
 Graph::Graph() {
 	for (int i = 0; i < MAX_SIZE; i++) {
 		items[i] = NULL;
@@ -44,11 +53,42 @@ int Graph::hash(KeyType key) {
 	hash = hash % MAX_SIZE;
 	return hash;
 }
+string Graph::priority(KeyType key) {
+	string numbers;
+	for (int i = 0; i < key.length(); i++) {
+		stringstream ss;
+		ss << key[i];
+		string temp;
+		int number;
+		
+		while (!ss.eof()) {
+			ss >> temp;
+			if (stringstream(temp) >> number) {
+				numbers += to_string(number);
+			}
+			temp = "";
+		}
+	}
+	if (numbers == "") {
+		return "0";
+	}
+
+	return numbers;
+	//string no = "";
+	//for (int i = 0; i < key.length(); i++) {
+	//	char x = isno(key[i]);
+	//	no += (string)x;
+	//}
+	///*int n = stoi(no);*/
+	//return no;
+}
 
 bool Graph::add(KeyType newKey, ItemType newItem) {
 	int hash = this->hash(newKey);
+	int Priority = stoi(this->priority(newKey));
 	Node *n = new Node;
 	n->key = newKey;
+	n->priority = Priority;
 	n->item = newItem;
 	n->next = NULL;
 	if (items[hash] == NULL) {
@@ -63,6 +103,11 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 			return false;
 		}
 		while (current->next != NULL) {
+			if (current->next->priority > n->priority) {
+				n->next = current->next;
+				current->next = n;
+				return true;
+			}
 			if (current->key == n->key) {
 				//cout << "duplicate found" << endl;
 				return false;
@@ -77,8 +122,10 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 
 bool Graph::addWrite(KeyType newKey, ItemType newItem) {
 	int hash = this->hash(newKey);
+	int Priority = stoi(this->priority(newKey));
 	Node *n = new Node;
 	n->key = newKey;
+	n->priority = Priority;
 	n->item = newItem;
 	n->next = NULL;
 	if (items[hash] == NULL) {
@@ -94,6 +141,12 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem) {
 			return false;
 		}
 		while (current->next != NULL) {
+			if (current->next->priority > n->priority) {
+				n->next = current->next;
+				current->next = n;
+				this->write();
+				return true;
+			}
 			if (current->key == n->key) {
 				//cout << "duplicate found" << endl;
 				return false;
@@ -186,32 +239,6 @@ void Graph::displayStationInfo(string station_name) {
 	}
 
 
-	//ifstream file;
-	//file.open("Stations.csv");
-	//if (file.is_open()) {
-	//	string word;
-	//	while (!file.eof()) {
-	//		string no;
-	//		string Name;
-	//		string row;
-	//		getline(file, row);
-	//		std::stringstream s_stream(row);
-	//		int count = 0;
-	//		while (getline(s_stream, word, ',')) {
-	//			if (count == 0) {
-	//				no = word;
-	//				count++;
-	//			}
-	//			else {
-	//				Name = word;
-	//				if (Name == station_name) {
-	//					key = no; //if name is equal, get key
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
-	//file.close();
 	if (key == "") {
 		cout << "No station found" << endl;
 	}
@@ -224,7 +251,7 @@ void Graph::displayStationInfo(string station_name) {
 			cout << "Station found!" << endl;
 			cout << this->find(key)->key << endl;
 			cout << this->find(key)->item << endl;
-			for (int j = 0; j < MAX_INTERCHANGES - 1; j++) {
+			for (int j = 0; j < MAX_INTERCHANGES; j++) {
 				if (this->find(key)->interchanges[j] != "") {
 					cout << "Interchange with " << this->find(key)->interchanges[j] << endl;
 				}
@@ -318,6 +345,7 @@ void Graph::print() {
 			while (current != NULL) {
 				cout << "Number : " << current->key << endl;
 				cout << "Name : " << current->item << endl;
+				cout << "Priority: " << current->priority << endl;
 				current = current->next;
 			}
 		}
@@ -326,7 +354,8 @@ void Graph::print() {
 
 void Graph::write() {
 	ofstream file;
-	file.open("stations.csv");
+	//remove("Stations.csv");
+	file.open("Stations.csv");
 	if (file.is_open()) {
 		for (int i = 0; i < MAX_SIZE; i++) {
 			Node* current = new Node;
