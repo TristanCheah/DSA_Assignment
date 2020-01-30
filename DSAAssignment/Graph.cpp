@@ -90,6 +90,7 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 	n->key = newKey;
 	n->priority = Priority;
 	n->item = newItem;
+	n->previous = NULL;
 	n->next = NULL;
 	if (items[hash] == NULL) {
 		items[hash] = n;
@@ -105,7 +106,9 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 		while (current->next != NULL) {
 			if (current->next->priority > n->priority) {
 				n->next = current->next;
+				n->previous = current;
 				current->next = n;
+				n->next->previous = n;
 				return true;
 			}
 			if (current->key == n->key) {
@@ -114,6 +117,7 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 			}
 			current = current->next;
 		}
+		n->previous = current;
 		current->next = n;
 		size += 1;
 		return true;
@@ -128,6 +132,7 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem) {
 	n->priority = Priority;
 	n->item = newItem;
 	n->next = NULL;
+	n->previous - NULL;
 	if (items[hash] == NULL) {
 		items[hash] = n;
 		size += 1;
@@ -143,7 +148,9 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem) {
 		while (current->next != NULL) {
 			if (current->next->priority > n->priority) {
 				n->next = current->next;
+				n->previous = current;				
 				current->next = n;
+				n->next->previous = n;
 				this->write();
 				return true;
 			}
@@ -153,7 +160,9 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem) {
 			}
 			current = current->next;
 		}
+		n->previous = current;
 		current->next = n;
+		
 		this->write();
 		size += 1;
 		return true;
@@ -284,6 +293,8 @@ void Graph::readCSV() {
 		}
 	}
 	file.close();
+
+	file.open("Routes.csv");
 }
 Graph::Node* Graph::find(KeyType key) {
 	int hash = this->hash(key);
@@ -346,6 +357,18 @@ void Graph::print() {
 				cout << "Number : " << current->key << endl;
 				cout << "Name : " << current->item << endl;
 				cout << "Priority: " << current->priority << endl;
+				if (current->next != NULL) {
+					cout << "Next Station : " << current->next->item << endl;
+				}
+				else {
+					cout << "Terminal station" << endl;
+				}
+				if (current->previous != NULL) {
+					cout << "Previous Station : " << current->previous->item << endl;
+				}
+				else {
+					cout << "Terminal station" << endl;
+				}
 				current = current->next;
 			}
 		}
@@ -372,4 +395,7 @@ void Graph::write() {
 	else {
 		cout << "can't open";
 	}
+}
+void Graph::displayRoute(KeyType start, KeyType end) {
+
 }
