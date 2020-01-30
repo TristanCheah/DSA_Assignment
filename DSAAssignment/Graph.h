@@ -17,6 +17,8 @@ private:
 		PriorityType priority;
 		Node* previous;
 		Node* next;
+		int distanceNext;
+		int distancePrev;
 		KeyType interchanges[MAX_INTERCHANGES];
 	};
 	Node *items[MAX_SIZE];

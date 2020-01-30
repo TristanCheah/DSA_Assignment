@@ -253,16 +253,17 @@ void Graph::displayStationInfo(string station_name) {
 	}
 	else {
 		int hash = this->hash(key);
-		if (this->find(key) == NULL) {
+		Node* station = this->find(key);
+		if (station == NULL) {
 			cout << "No station found" << endl;
 		}
 		else {
 			cout << "Station found!" << endl;
-			cout << this->find(key)->key << endl;
-			cout << this->find(key)->item << endl;
+			cout << "Station Number : " << station->key << endl;
+			cout << "Station Name : " << station->item << endl;
 			for (int j = 0; j < MAX_INTERCHANGES; j++) {
-				if (this->find(key)->interchanges[j] != "") {
-					cout << "Interchange with " << this->find(key)->interchanges[j] << endl;
+				if (station->interchanges[j] != "") {
+					cout << "Interchange with " << station->interchanges[j] << endl;
 				}
 			}
 		}
@@ -293,6 +294,39 @@ void Graph::readCSV() {
 		}
 	}
 	file.close();
+	file.open("Routes.csv");
+	if (file.is_open()) {
+		int count = 0;
+		while (!file.eof()) {
+			string word;
+			string station_key_array[40];
+			int distance_array[40];
+			getline(file, word);
+			std::stringstream s_stream(word);
+			int array_count = 0;
+			while (getline(s_stream, word, ',')) {
+				if (count == 0) {
+					station_key_array[array_count] = word;
+					array_count += 1;
+				}
+				else if(count == 1){
+					distance_array[array_count] = stoi(word);
+					array_count += 1;
+				}
+			}
+			if (count == 0) {
+				count = 1;
+			}
+			else {
+				int iterative_count = 0;
+				while (this->find(station_key_array[iterative_count + 1]) != NULL)) {
+					Node* station1 = this->find(station_key_array[iterative_count]);
+				}
+				count = 0;
+			}
+
+		}
+	}
 
 	file.open("Routes.csv");
 }
