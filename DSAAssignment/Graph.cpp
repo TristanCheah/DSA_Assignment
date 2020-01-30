@@ -71,8 +71,38 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 		}
 		current->next = n;
 		size += 1;
-		//cout << "entered after traversing" << endl;
-		//cout << to_string(hash) << endl;
+		return true;
+	}
+}
+
+bool Graph::addWrite(KeyType newKey, ItemType newItem) {
+	int hash = this->hash(newKey);
+	Node *n = new Node;
+	n->key = newKey;
+	n->item = newItem;
+	n->next = NULL;
+	if (items[hash] == NULL) {
+		items[hash] = n;
+		size += 1;
+		this->write();
+		return true;
+	}
+	else {
+		Node *current = items[hash];
+		if (current->key == n->key) {
+			//cout << "duplicate found" << endl;
+			return false;
+		}
+		while (current->next != NULL) {
+			if (current->key == n->key) {
+				//cout << "duplicate found" << endl;
+				return false;
+			}
+			current = current->next;
+		}
+		current->next = n;
+		this->write();
+		size += 1;
 		return true;
 	}
 }
@@ -291,5 +321,26 @@ void Graph::print() {
 				current = current->next;
 			}
 		}
+	}
+}
+
+void Graph::write() {
+	ofstream file;
+	file.open("stations.csv");
+	if (file.is_open()) {
+		for (int i = 0; i < MAX_SIZE; i++) {
+			Node* current = new Node;
+			if (items[i] != NULL) {
+				current = items[i];
+				while (current != NULL) {
+					file << current->key+",";
+					file << current->item+"\n";
+					current = current->next;
+				}
+			}
+		}
+	}
+	else {
+		cout << "can't open";
 	}
 }
