@@ -297,10 +297,12 @@ void Graph::readCSV() {
 	file.open("Routes.csv");
 	if (file.is_open()) {
 		int count = 0;
+		string station_key_array[40];
+		int distance_array[40];
 		while (!file.eof()) {
 			string word;
-			string station_key_array[40];
-			int distance_array[40];
+			//string station_key_array[40];
+			//int distance_array[40];
 			getline(file, word);
 			std::stringstream s_stream(word);
 			int array_count = 0;
@@ -319,16 +321,35 @@ void Graph::readCSV() {
 			}
 			else {
 				int iterative_count = 0;
-				while (this->find(station_key_array[iterative_count + 1]) != NULL)) {
+				while (station_key_array[iterative_count + 1] != ""){
 					Node* station1 = this->find(station_key_array[iterative_count]);
+					Node* station2 = this->find(station_key_array[iterative_count + 1]);
+
+					int distance = distance_array[iterative_count];
+					
+					station1->distanceNext = distance;
+					station2->distancePrev = distance;
+					/*cout << station2->item + " : " << station2->distancePrev << endl;*/
+					iterative_count++;
 				}
+				/*Node* station1 = this->find(station_key_array[iterative_count]);
+				if (this->find(station_key_array[iterative_count + 1]) == NULL) {
+					station1->distancePrev = distance_array[iterative_count];
+				}*/
 				count = 0;
+				std::fill(distance_array, distance_array + array_count, 0);
+				for (int i = 0; i < array_count + 1; i++) {
+					cout << station_key_array[28];
+					station_key_array[i].clear();
+					
+				}
+				
 			}
 
 		}
 	}
 
-	file.open("Routes.csv");
+	
 }
 Graph::Node* Graph::find(KeyType key) {
 	int hash = this->hash(key);
@@ -388,21 +409,32 @@ void Graph::print() {
 		if (items[i] != NULL) {
 			current = items[i];
 			while (current != NULL) {
+				cout << "===============================" << endl;
 				cout << "Number : " << current->key << endl;
 				cout << "Name : " << current->item << endl;
 				cout << "Priority: " << current->priority << endl;
 				if (current->next != NULL) {
 					cout << "Next Station : " << current->next->item << endl;
+					if (current->distanceNext != NULL) {
+						cout << "Distance to Next Station (" << current->next->item << ") : " << current->distanceNext << endl;
+					}
 				}
 				else {
 					cout << "Terminal station" << endl;
 				}
 				if (current->previous != NULL) {
 					cout << "Previous Station : " << current->previous->item << endl;
+					if (current->distancePrev != NULL) {
+						cout << "Distance to Prev Station (" << current->previous->item << ") : " << current->distancePrev << endl;
+					}
 				}
 				else {
 					cout << "Terminal station" << endl;
 				}
+
+				
+				
+				
 				current = current->next;
 			}
 		}
