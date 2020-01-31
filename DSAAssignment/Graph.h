@@ -20,6 +20,7 @@ private:
 		int distanceNext;
 		int distancePrev;
 		KeyType interchanges[MAX_INTERCHANGES];
+		
 	};
 	Node *items[MAX_SIZE];
 	int size;
@@ -38,6 +39,7 @@ public:
 	bool add(KeyType newKey, ItemType newItem);
 	bool addWrite(KeyType newKey, ItemType newItem);
 	void getLine(KeyType key);
+	string get_station_prefix(string station_no);
 	void print();
 	void write();
 };

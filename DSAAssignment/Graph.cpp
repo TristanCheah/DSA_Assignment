@@ -339,7 +339,6 @@ void Graph::readCSV() {
 				count = 0;
 				std::fill(distance_array, distance_array + array_count, 0);
 				for (int i = 0; i < array_count + 1; i++) {
-					cout << station_key_array[28];
 					station_key_array[i].clear();
 					
 				}
@@ -462,6 +461,94 @@ void Graph::write() {
 		cout << "can't open";
 	}
 }
+string Graph::get_station_prefix(string station_no) {
+	string station_prefix;
+	for (int i = 0; i < station_no.length(); i++) {
+		stringstream ss;
+		ss << station_no[i];
+		string temp;
+		int number;
+
+		while (!ss.eof()) {
+			ss >> temp;
+			if (stringstream(temp) >> number) {
+				
+			}
+			else {
+				station_prefix += temp;
+			}
+			temp = "";
+		}
+	}
+	return station_prefix;
+}
 void Graph::displayRoute(KeyType start, KeyType end) {
+	Node* start_node = this->find(start);
+	if (start_node == NULL) {
+		cout << "Starting station does not exist" << endl;
+		return;
+	}
+	string route[100];
+	// if end station's station prefix = start's prefix, iterate down the line.
+
+	string start_prefix = get_station_prefix(start);
+	string end_prefix = get_station_prefix(end);
+	int route_length = 1;
+	if (start_prefix == end_prefix) {
+		
+		Node* current = start_node;
+		route[0] = start_node->item + " (" + start_node->key + ") " ;
+		while (current->next != NULL)
+		{
+			if (current->key == end) {
+				for (int i = 0; i < 100; i++) {
+					if (route[i] == "") {
+						return;
+					}
+					if (i != 0) {
+						cout << " -> ";
+					}
+					
+					cout << route[i] ;
+					
+				}
+				
+			}
+			current = current->next;
+			route[route_length] = current->item + " (" + current->key + ") ";
+			route_length++;
+			
+		}
+		for (int i = 0; i < route_length; i++) {
+			route[i].clear();
+		}
+		route_length = 1;
+		route[0] = start_node->item + " (" + start_node->key + ") ";
+		current = start_node;
+		while (current->previous != NULL) {
+			if (current->key == end) {
+				for (int i = 0; i < 100; i++) {
+					if (route[i] == "") {
+						return;
+					}
+					if (i != 0) {
+						cout << " -> ";
+					}
+
+					cout << route[i];
+
+				}
+
+			}
+			current = current->previous;
+			route[route_length] = current->item + " (" + current->key + ") ";
+			route_length++;
+		}
+	}
+	else {
+		
+	}
+	
+	
 
 }
