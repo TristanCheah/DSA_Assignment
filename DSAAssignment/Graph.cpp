@@ -482,53 +482,117 @@ string Graph::get_station_prefix(string station_no) {
 	}
 	return station_prefix;
 }
-void Graph::displayRoute(KeyType start, KeyType end) {
+
+void Graph::CalculateFare(int distance_travelled) {
+	float fares[16];
+	ifstream file;
+	file.open("Fares.csv");
+	if (file.is_open()) {
+		string word;
+		int row_count = 0;
+		while (!file.eof()) {
+			string no;
+			string Name;
+			string row;
+			getline(file, row);
+			std::stringstream s_stream(row);
+			int count = 0;
+			while (getline(s_stream, word, ',')) {
+				if (count == 0) {
+					fares[row_count] = stof(word);
+					row_count++;
+					count++;
+				}
+				else {
+					fares[row_count] = stof(word);
+					row_count++;
+				}
+			}
+		}
+	}
+	file.close();
+
+	for (int i = 7; i > -1; i--) {
+		if (distance_travelled/1000 > fares[i]) {
+			cout << "\nYour fare is $" << fares[i + 1] / 100 << endl;
+			return;
+		}
+	}
+}
+void Graph::displayRoute(KeyType start, KeyType end, string* route, int route_length, float distance) {
+	
 	Node* start_node = this->find(start);
 	if (start_node == NULL) {
 		cout << "Starting station does not exist" << endl;
 		return;
 	}
-	string route[100];
+
 	// if end station's station prefix = start's prefix, iterate down the line.
 
 	string start_prefix = get_station_prefix(start);
 	string end_prefix = get_station_prefix(end);
-	int route_length = 1;
+	int prev_route_len = route_length;
+	
 	if (start_prefix == end_prefix) {
-		
+
 		Node* current = start_node;
-		route[0] = start_node->item + " (" + start_node->key + ") " ;
+		route[route_length] = start_node->item + " (" + start_node->key + ") ";
+		route_length++;
+
+		
 		while (current->next != NULL)
 		{
 			if (current->key == end) {
+				
 				for (int i = 0; i < 100; i++) {
 					if (route[i] == "") {
+						CalculateFare(distance);
 						return;
 					}
 					if (i != 0) {
 						cout << " -> ";
 					}
-					
-					cout << route[i] ;
-					
+
+					cout << route[i];
 				}
 				
 			}
-			current = current->next;
+			distance += current->distanceNext;
+			current = current->next;			
 			route[route_length] = current->item + " (" + current->key + ") ";
 			route_length++;
-			
+
 		}
-		for (int i = 0; i < route_length; i++) {
+		//if reach terminal
+		if (current->key == end) {
+			distance += current->distanceNext;
+			for (int i = 0; i < 100; i++) {
+				if (route[i] == "") {
+					CalculateFare(distance);
+					return;
+				}
+				if (i != 0) {
+					cout << " -> ";
+				}
+				cout << route[i];
+			}
+		}
+
+		//resetting
+		for (int i = prev_route_len; i < 100; i++) {
 			route[i].clear();
 		}
-		route_length = 1;
-		route[0] = start_node->item + " (" + start_node->key + ") ";
+		distance = 0;
+		route_length = prev_route_len;
+		route[route_length] = start_node->item + " (" + start_node->key + ") ";
+		route_length++;
 		current = start_node;
+
 		while (current->previous != NULL) {
 			if (current->key == end) {
 				for (int i = 0; i < 100; i++) {
 					if (route[i] == "") {
+						CalculateFare(distance);
 						return;
 					}
 					if (i != 0) {
@@ -538,17 +602,78 @@ void Graph::displayRoute(KeyType start, KeyType end) {
 					cout << route[i];
 
 				}
-
+				
 			}
+			distance += current->distancePrev;
+			current = current->previous;
+			route[route_length] = current->item + " (" + current->key + ") ";
+			route_length++;
+		}
+		
+		if (current->key == end) {
+			distance = current->distancePrev;
+			for (int i = 0; i < 100; i++) {
+				if (route[i] == "") {
+					return;
+				}
+				if (i != 0) {
+					cout << " -> ";
+				}
+				cout << route[i];
+			}
+		}
+	}
+	else {
+		//find an interchange on this line
+		Node* current = start_node;
+		route[route_length] = current->item + " (" + current->key + ") ";
+		route_length++;
+		while (current->next != NULL) {
+			if (current->interchanges[0] != "") {
+				for (int i = 0; i <= 1; i++) {
+					string interchange_prefix = get_station_prefix(current->interchanges[i]);
+					if (interchange_prefix == end_prefix) {
+						Node* new_start = this->find(current->key);
+						
+						displayRoute(new_start->interchanges[i], end, route, route_length, distance);
+						return;
+					}
+				}
+			}
+			distance = current->distanceNext;
+			current = current->next;
+			route[route_length] = current->item + " (" + current->key + ") ";
+			route_length++;
+		}
+
+		for (int i = prev_route_len; i < 100; i++) {
+			route[i].clear();
+		}
+		distance = 0;
+		route_length = prev_route_len;
+		route[route_length] = start_node->item + " (" + start_node->key + ") ";
+		route_length++;
+
+		current = start_node;
+		while (current->previous != NULL) {
+			if (current->interchanges[0] != "") {
+				for (int i = 0; i <= 1; i++) {
+					string interchange_prefix = get_station_prefix(current->interchanges[i]);
+					if (interchange_prefix == end_prefix) {
+						Node* new_start = this->find(current->key);
+
+						displayRoute(new_start->interchanges[i], end, route, route_length, distance);
+						return;
+					}
+				}
+			}
+			distance = current->distancePrev;
 			current = current->previous;
 			route[route_length] = current->item + " (" + current->key + ") ";
 			route_length++;
 		}
 	}
-	else {
-		
-	}
-	
-	
+
+
 
 }
