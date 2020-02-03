@@ -39,9 +39,10 @@ public:
 	void CalculateFare(int distance_travelled);
 	string priority(KeyType key);
 	bool add(KeyType newKey, ItemType newItem);
-	bool addWrite(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext);
+	bool addWrite(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext, string interchanges[3]);
 	void getLine(KeyType key);
 	void addLine();
+	void addInterchanges(string interchanges[3]);
 	string get_station_prefix(string station_no);
 	void print();
 	void write();
