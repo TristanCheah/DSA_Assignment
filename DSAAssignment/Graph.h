@@ -41,6 +41,7 @@ public:
 	bool add(KeyType newKey, ItemType newItem);
 	bool addWrite(KeyType newKey, ItemType newItem);
 	void getLine(KeyType key);
+	void addLine(KeyType key);
 	string get_station_prefix(string station_no);
 	void print();
 	void write();

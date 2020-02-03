@@ -673,7 +673,7 @@ void Graph::displayRoute(KeyType start, KeyType end, string* route, int route_le
 			route_length++;
 		}
 	}
-
-
+}
+void Graph::addLine(KeyType key) {
 
 }
