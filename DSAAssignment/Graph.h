@@ -35,7 +35,7 @@ public:
 	void displayStationInfo(string station_name);
 	Node* find(KeyType key);
 	int hash(KeyType key);
-	void displayRoute(KeyType start,KeyType end, string *route, int route_length, float distance);
+	void displayRoute(KeyType start,KeyType end, string route[100], int route_length, float distance);
 	void CalculateFare(int distance_travelled);
 	string priority(KeyType key);
 	bool add(KeyType newKey, ItemType newItem);

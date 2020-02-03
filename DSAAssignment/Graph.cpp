@@ -301,8 +301,6 @@ void Graph::readCSV() {
 		int distance_array[40];
 		while (!file.eof()) {
 			string word;
-			//string station_key_array[40];
-			//int distance_array[40];
 			getline(file, word);
 			std::stringstream s_stream(word);
 			int array_count = 0;
@@ -341,14 +339,10 @@ void Graph::readCSV() {
 				for (int i = 0; i < array_count + 1; i++) {
 					station_key_array[i].clear();
 					
-				}
-				
+				}			
 			}
-
 		}
-	}
-
-	
+	}	
 }
 Graph::Node* Graph::find(KeyType key) {
 	int hash = this->hash(key);
@@ -519,11 +513,16 @@ void Graph::CalculateFare(int distance_travelled) {
 		}
 	}
 }
-void Graph::displayRoute(KeyType start, KeyType end, string* route, int route_length, float distance) {
+void Graph::displayRoute(KeyType start, KeyType end, string route[100], int route_length, float distance) {
 	
 	Node* start_node = this->find(start);
+	Node* end_node = this->find(end);
 	if (start_node == NULL) {
 		cout << "Starting station does not exist" << endl;
+		return;
+	}
+	if (end_node == NULL) {
+		cout << "End station does not exist" << endl;
 		return;
 	}
 
@@ -587,7 +586,7 @@ void Graph::displayRoute(KeyType start, KeyType end, string* route, int route_le
 		route[route_length] = start_node->item + " (" + start_node->key + ") ";
 		route_length++;
 		current = start_node;
-
+		//for other dir
 		while (current->previous != NULL) {
 			if (current->key == end) {
 				for (int i = 0; i < 100; i++) {
