@@ -119,12 +119,13 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 		}
 		n->previous = current;
 		current->next = n;
+		current->distanceNext = n->distancePrev;
 		size += 1;
 		return true;
 	}
 }
 
-bool Graph::addWrite(KeyType newKey, ItemType newItem) {
+bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int distanceNext) {
 	int hash = this->hash(newKey);
 	int Priority = stoi(this->priority(newKey));
 	Node *n = new Node;
@@ -132,6 +133,8 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem) {
 	n->priority = Priority;
 	n->item = newItem;
 	n->next = NULL;
+	n->distancePrev = distancePrev;
+	n->distanceNext = distanceNext;
 	n->previous - NULL;
 	if (items[hash] == NULL) {
 		items[hash] = n;
@@ -151,6 +154,8 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem) {
 				n->previous = current;				
 				current->next = n;
 				n->next->previous = n;
+				n->previous->distanceNext = n->distancePrev;
+				n->next->distancePrev = n->distanceNext;
 				this->write();
 				return true;
 			}
@@ -162,7 +167,7 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem) {
 		}
 		n->previous = current;
 		current->next = n;
-		
+		n->previous->distanceNext = n->distancePrev;
 		this->write();
 		size += 1;
 		return true;
@@ -406,15 +411,6 @@ void Graph::print() {
 				cout << "Number : " << current->key << endl;
 				cout << "Name : " << current->item << endl;
 				cout << "Priority: " << current->priority << endl;
-				if (current->next != NULL) {
-					cout << "Next Station : " << current->next->item << endl;
-					if (current->distanceNext != NULL) {
-						cout << "Distance to Next Station (" << current->next->item << ") : " << current->distanceNext << endl;
-					}
-				}
-				else {
-					cout << "Terminal station" << endl;
-				}
 				if (current->previous != NULL) {
 					cout << "Previous Station : " << current->previous->item << endl;
 					if (current->distancePrev != NULL) {
@@ -424,6 +420,17 @@ void Graph::print() {
 				else {
 					cout << "Terminal station" << endl;
 				}
+				if (current->next != NULL) {
+					cout << "Next Station : " << current->next->item << endl;
+					if (current->distanceNext != NULL) {
+						cout << "Distance to Next Station (" << current->next->item << ") : " << current->distanceNext << endl;
+					}
+				}
+				else {
+					cout << "Terminal station" << endl;
+				}
+				
+
 
 				
 				
@@ -454,6 +461,34 @@ void Graph::write() {
 	else {
 		cout << "can't open";
 	}
+	file.close();
+	file.open("Routes.csv");
+	string stationNo;
+	string distance;
+	if (file.is_open()) {
+		for (int i = 0; i < MAX_SIZE; i++) {
+			Node* current = new Node;
+			if (items[i] != NULL) {
+				current = items[i];
+				while (current != NULL) {
+					stationNo += current->key + ",";
+					if (current->distanceNext > 0) {
+						distance += to_string(current->distanceNext) + ",";
+					}
+					
+					current = current->next;
+				}
+				stationNo += "\n";
+				distance += "\n";
+				
+				file << stationNo;
+				file << distance;
+				stationNo = "";
+				distance = "";
+			}
+		}
+	}
+	file.close();
 }
 string Graph::get_station_prefix(string station_no) {
 	string station_prefix;
@@ -512,6 +547,7 @@ void Graph::CalculateFare(int distance_travelled) {
 			return;
 		}
 	}
+	cout << "\nYour fare is $" << fares[7] / 100 << endl;
 }
 void Graph::displayRoute(KeyType start, KeyType end, string route[100], int route_length, float distance) {
 	
@@ -673,6 +709,21 @@ void Graph::displayRoute(KeyType start, KeyType end, string route[100], int rout
 		}
 	}
 }
-void Graph::addLine(KeyType key) {
-
+void Graph::addLine() {
+	cout << "";
+	int val = hash(key);
+	Node* n = new Node;
+	n->key = key;
+	n->item = item;
+	n->next = NULL;
+	n->previous = NULL;
+	n->distanceNext = 0;
+	n->distancePrev = 0;
+	if (items[val] == NULL) {
+		items[val] = n;
+		cout << "Line Added" << endl;
+	}
+	else {
+		cout << "Line already exists" << endl;
+	}
 }
