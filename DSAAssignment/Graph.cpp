@@ -124,11 +124,23 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 		return true;
 	}
 }
-
-bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int distanceNext) {
+void Graph::addInterchanges(string interchanges[2]) {
+	for (int i = 0; i < 2; i++) {
+		if (this->find(interchanges[i]) != NULL) {
+			Node* interchange_node = this->find(interchanges[i]);
+			for (int j = 0; j < 2; j++) {
+				if (interchange_node->interchanges[j] == ""  && interchanges[j] != interchange_node->key) {
+					interchange_node->interchanges[j] = interchanges[j];
+				}
+			}
+		}
+	}
+}
+bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int distanceNext, string interchanges[2]) {
 	int hash = this->hash(newKey);
 	int Priority = stoi(this->priority(newKey));
 	Node *n = new Node;
+	Node* other_interchange = new Node;
 	n->key = newKey;
 	n->priority = Priority;
 	n->item = newItem;
@@ -136,6 +148,26 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int dist
 	n->distancePrev = distancePrev;
 	n->distanceNext = distanceNext;
 	n->previous - NULL;
+	for (int i = 0; i < 2; i++) {
+		n->interchanges[i] = interchanges[i];	
+	}
+	for (int i = 0; i < 2; i++) {
+		if (interchanges[i] == "") {
+			continue;
+		}
+		else {
+			other_interchange = this->find(interchanges[i]);
+			for (int j = 0; j < 2; j++) {
+				if (other_interchange->interchanges[j] == "") {
+					other_interchange->interchanges[j] = newKey;
+					break;
+				}
+			}
+		}
+	}
+	string interchanges_list[2] = { interchanges[0], interchanges[1] };
+	this->addInterchanges(interchanges);
+
 	if (items[hash] == NULL) {
 		items[hash] = n;
 		size += 1;
@@ -156,6 +188,7 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int dist
 				n->next->previous = n;
 				n->previous->distanceNext = n->distancePrev;
 				n->next->distancePrev = n->distanceNext;
+				
 				this->write();
 				return true;
 			}
