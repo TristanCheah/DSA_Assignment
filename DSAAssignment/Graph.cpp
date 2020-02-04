@@ -710,20 +710,25 @@ void Graph::displayRoute(KeyType start, KeyType end, string route[100], int rout
 	}
 }
 void Graph::addLine() {
-	cout << "";
-	int val = hash(key);
-	Node* n = new Node;
-	n->key = key;
-	n->item = item;
-	n->next = NULL;
-	n->previous = NULL;
-	n->distanceNext = 0;
-	n->distancePrev = 0;
-	if (items[val] == NULL) {
-		items[val] = n;
-		cout << "Line Added" << endl;
-	}
-	else {
-		cout << "Line already exists" << endl;
+	cout << "what station prefix do u want for this new line: ";
+	string prefix;
+	getline(cin, prefix);
+	while (true) {
+		cout << "what number is this station: ";
+		string number;
+		getline(cin, number);
+		cout << "Is this station an Interchange (Yes/No): ";
+		string interchange;
+		getline(cin, interchange);
+		if (interchange == "Yes") {
+			cout << "which station is it an interchange with: ";
+			string station;
+			getline(cin, station);
+			string stationNo = prefix + number;
+
+		}
+		else {
+			cout << "What is the name of the Station: ";
+		}
 	}
 }
