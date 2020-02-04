@@ -124,6 +124,53 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 		return true;
 	}
 }
+
+bool Graph::add(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext) {
+	int hash = this->hash(newKey);
+	int Priority = stoi(this->priority(newKey));
+	Node *n = new Node;
+	n->key = newKey;
+	n->priority = Priority;
+	n->item = newItem;
+	n->distancePrev;
+	n->distanceNext;
+	n->previous = NULL;
+	n->next = NULL;
+	if (items[hash] == NULL) {
+		items[hash] = n;
+		size += 1;
+		return true;
+	}
+	else {
+		Node *current = items[hash];
+		if (current->key == n->key) {
+			//cout << "duplicate found" << endl;
+			return false;
+		}
+		while (current->next != NULL) {
+			if (current->next->priority > n->priority) {
+				n->next = current->next;
+				n->previous = current;
+				current->next = n;
+				n->next->previous = n;
+				n->previous->distanceNext = n->distancePrev;
+				n->next->distancePrev = n->distanceNext;
+				return true;
+			}
+			if (current->key == n->key) {
+				//cout << "duplicate found" << endl;
+				return false;
+			}
+			current = current->next;
+		}
+		n->previous = current;
+		current->next = n;
+		current->distanceNext = n->distancePrev;
+		size += 1;
+		return true;
+	}
+}
+
 void Graph::addInterchanges(string interchanges[2]) {
 	for (int i = 0; i < 2; i++) {
 		if (this->find(interchanges[i]) != NULL) {
@@ -750,6 +797,8 @@ void Graph::addLine() {
 		cout << "what number is this station: ";
 		string number;
 		getline(cin, number);
+		string stationNo = prefix + number;
+		cout << stationNo << endl;
 		cout << "Is this station an Interchange (Yes/No): ";
 		string interchange;
 		getline(cin, interchange);
@@ -757,11 +806,52 @@ void Graph::addLine() {
 			cout << "which station is it an interchange with: ";
 			string station;
 			getline(cin, station);
-			string stationNo = prefix + number;
-
 		}
 		else {
 			cout << "What is the name of the Station: ";
+			string name;
+			getline(cin, name);
+			cout << "Is this a terminal Station? (Yes/No) : ";
+			string isterminal;
+			getline(cin, isterminal);
+			string distancenext;
+			string distanceprev;
+			int Distancenext;
+			int Distanceprev;
+			if (isterminal == "Yes") {
+				cout << "Which direction? (Start/End) : ";
+				string whatdirection;
+				getline(cin, whatdirection);
+				if (whatdirection == "Start") {
+					cout << "distance to Next Station: ";
+
+					getline(cin, distancenext);
+					Distancenext = stoi(distancenext);
+					Distanceprev = 0;
+				}
+				else if (whatdirection == "End") {
+					cout << "distance to Previous Station: ";
+
+					getline(cin, distanceprev);
+					Distanceprev = stoi(distanceprev);
+					Distancenext = 0;
+				}
+			}
+			else if (isterminal == "No") {
+				cout << "distance to Next: ";
+				getline(cin, distancenext);
+				Distancenext = stoi(distancenext);
+				cout << "distance to Previous Station: ";
+				getline(cin, distanceprev);
+				Distanceprev = stoi(distanceprev);
+			}
+			this->add(stationNo, name, Distancenext, Distanceprev);
+		}
+		cout << "do you want to add another station (Yes/No): ";
+		string choice;
+		getline(cin, choice);
+		if (choice == "No") {
+			break;
 		}
 	}
 }
