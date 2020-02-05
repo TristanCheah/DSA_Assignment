@@ -643,13 +643,13 @@ void Graph::CalculateFare(int distance_travelled) {
 	}
 	file.close();
 
-	for (int i = 14; i > -1; i -= 2) {
+	for (int i = 15; i > -1; i -= 2) {
 		if (distance_travelled/1000 > fares[i]) {
 			cout << "\nYour fare is $" << fares[i + 1] / 100 << endl;
 			return;
 		}
 	}
-	cout << "\nYour fare is $" << fares[14] / 100 << endl;
+	cout << "\nYour fare is $" << fares[15] / 100 << endl;
 }
 void Graph::displayRoute(KeyType start, KeyType end, string route[100], int route_length, float distance) {
 	
