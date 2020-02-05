@@ -40,7 +40,7 @@ public:
 	string priority(KeyType key);
 	bool add(KeyType newKey, ItemType newItem);
 	bool add(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext);
-	bool addWrite(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext, string interchanges[3]);
+	bool addWrite(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext, string interchanges[2]);
 	void getLine(KeyType key);
 	void addLine();
 	void addInterchanges(string interchanges[3]);

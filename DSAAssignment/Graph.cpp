@@ -430,6 +430,9 @@ void Graph::readCSV() {
 	}	
 }
 Graph::Node* Graph::find(KeyType key) {
+	if (key == "") {
+		return NULL;
+	}
 	int hash = this->hash(key);
 	if (items[hash]->key == key) {
 		return items[hash];
