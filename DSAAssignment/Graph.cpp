@@ -648,14 +648,15 @@ string Graph::get_station_prefix(string station_no) {
 
 void Graph::CalculateFare(int distance_travelled) {
 	
-
-	for (int i = 15; i > -1; i -= 2) {
+	cout << to_string(distance_travelled) <<endl;
+	for (int i = 14; i > -1; i -= 2) {
+		cout << to_string(fares[i]) << endl;
 		if (distance_travelled/1000 > this->fares[i]) {
 			cout << "\nYour fare is $" << this->fares[i + 1] / 100 << endl;
 			return;
 		}
 	}
-	cout << "\nYour fare is $" << fares[15] / 100 << endl;
+	cout << "\nYour fare is $" << fares[1] / 100 << endl;
 }
 void Graph::LoadFares() {
 	
