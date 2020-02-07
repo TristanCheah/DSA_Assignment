@@ -125,7 +125,7 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 	}
 }
 
-bool Graph::add(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext, string interchanges[2]) {
+bool Graph::add(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext, string interchanges[3]) {
 	int hash = this->hash(newKey);
 	int Priority = stoi(this->priority(newKey));
 	Node *n = new Node;
@@ -155,7 +155,7 @@ bool Graph::add(KeyType newKey, ItemType newItem, int distancePrev, int distance
 		}
 	}
 
-
+	addInterchanges(interchanges);
 	if (items[hash] == NULL) {
 		items[hash] = n;
 		size += 1;
@@ -191,11 +191,11 @@ bool Graph::add(KeyType newKey, ItemType newItem, int distancePrev, int distance
 	}
 }
 
-void Graph::addInterchanges(string interchanges[2]) {
-	for (int i = 0; i < 2; i++) {
+void Graph::addInterchanges(string interchanges[3]) {
+	for (int i = 0; i < 3; i++) {
 		if (this->find(interchanges[i]) != NULL) {
 			Node* interchange_node = this->find(interchanges[i]);
-			for (int j = 0; j < 2; j++) {
+			for (int j = 0; j < 3; j++) {
 				if (interchange_node->interchanges[j] == ""  && interchanges[j] != interchange_node->key) {
 					interchange_node->interchanges[j] = interchanges[j];
 				}
@@ -203,7 +203,7 @@ void Graph::addInterchanges(string interchanges[2]) {
 		}
 	}
 }
-bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int distanceNext, string interchanges[2]) {
+bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int distanceNext, string interchanges[3]) {
 	int hash = this->hash(newKey);
 	int Priority = stoi(this->priority(newKey));
 	Node *n = new Node;
@@ -214,7 +214,7 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int dist
 	n->next = NULL;
 	n->distancePrev = distancePrev;
 	n->distanceNext = distanceNext;
-	n->previous - NULL;
+	n->previous = NULL;
 	for (int i = 0; i < 2; i++) {
 		n->interchanges[i] = interchanges[i];	
 	}
@@ -231,8 +231,9 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int dist
 				}
 			}
 		}
-	}
-
+	}	
+		
+	addInterchanges(interchanges);
 
 	if (items[hash] == NULL) {
 		items[hash] = n;
@@ -591,6 +592,36 @@ void Graph::write() {
 		}
 	}
 	file.close();
+
+	file.open("Interchanges.csv");
+	string interchange;
+	if (file.is_open()) 
+	{
+		for (int i = 0; i < MAX_SIZE; i++) 
+		{
+			Node* current = new Node;
+			if (items[i] != NULL) 
+			{
+				current = items[i];
+				while (current != NULL) 
+				{
+					if (current->interchanges[0] != "" && interchange.find(current->key) == std::string::npos) {
+						if (current->interchanges[0] != "") {
+							interchange += current->interchanges[0] + ",";
+						}
+						if (current->interchanges[1] != "") {
+							interchange += current->interchanges[1] + ",";
+						}
+						interchange += current->key + "\n";
+						
+					}
+					current = current->next;
+				}
+				
+			}
+		}
+		file << interchange;
+	}
 }
 string Graph::get_station_prefix(string station_no) {
 	string station_prefix;
@@ -615,7 +646,18 @@ string Graph::get_station_prefix(string station_no) {
 }
 
 void Graph::CalculateFare(int distance_travelled) {
-	float fares[16];
+	
+
+	for (int i = 15; i > -1; i -= 2) {
+		if (distance_travelled/1000 > this->fares[i]) {
+			cout << "\nYour fare is $" << this->fares[i + 1] / 100 << endl;
+			return;
+		}
+	}
+	cout << "\nYour fare is $" << fares[15] / 100 << endl;
+}
+void Graph::LoadFares() {
+	
 	ifstream file;
 	file.open("Fares.csv");
 	if (file.is_open()) {
@@ -630,26 +672,18 @@ void Graph::CalculateFare(int distance_travelled) {
 			int count = 0;
 			while (getline(s_stream, word, ',')) {
 				if (count == 0) {
-					fares[row_count] = stof(word);
+					this->fares[row_count] = stof(word);
 					row_count++;
 					count++;
 				}
 				else {
-					fares[row_count] = stof(word);
+					this->fares[row_count] = stof(word);
 					row_count++;
 				}
 			}
 		}
 	}
 	file.close();
-
-	for (int i = 15; i > -1; i -= 2) {
-		if (distance_travelled/1000 > fares[i]) {
-			cout << "\nYour fare is $" << fares[i + 1] / 100 << endl;
-			return;
-		}
-	}
-	cout << "\nYour fare is $" << fares[15] / 100 << endl;
 }
 void Graph::displayRoute(KeyType start, KeyType end, string route[100], int route_length, float distance) {
 	
@@ -782,7 +816,17 @@ void Graph::displayRoute(KeyType start, KeyType end, string route[100], int rout
 			route[route_length] = current->item + " (" + current->key + ") ";
 			route_length++;
 		}
+		if (current->interchanges[0] != "") {
+			for (int i = 0; i <= 1; i++) {
+				string interchange_prefix = get_station_prefix(current->interchanges[i]);
+				if (interchange_prefix == end_prefix) {
+					Node* new_start = this->find(current->key);
 
+					displayRoute(new_start->interchanges[i], end, route, route_length, distance);
+					return;
+				}
+			}
+		}
 		for (int i = prev_route_len; i < 100; i++) {
 			route[i].clear();
 		}
@@ -809,6 +853,19 @@ void Graph::displayRoute(KeyType start, KeyType end, string route[100], int rout
 			route[route_length] = current->item + " (" + current->key + ") ";
 			route_length++;
 		}
+		if (current->interchanges[0] != "") {
+			for (int i = 0; i <= 1; i++) {
+				string interchange_prefix = get_station_prefix(current->interchanges[i]);
+				if (interchange_prefix == end_prefix) {
+					Node* new_start = this->find(current->key);
+
+					displayRoute(new_start->interchanges[i], end, route, route_length, distance);
+					return;
+				}
+			}
+		}
+
+
 	}
 }
 void Graph::addLine() {
@@ -859,13 +916,13 @@ void Graph::addLine() {
 		cout << "Is this an interchange (Yes/No) : ";
 		string isinterchange;
 		getline(cin, isinterchange);
-		string interchanges[2];
-		bool more_than_one = false;
+		string interchanges[3];
+		
 		if (isinterchange == "Yes") {
 			bool getting_interchange = true;
 
 			int interchange_count = 0;
-
+			int interchange_validation_counter = 0;
 			while (getting_interchange) {
 				string key_new;
 				if (interchange_count <= 0) {
@@ -884,12 +941,12 @@ void Graph::addLine() {
 					name = this->find(key_new)->item;
 					for (int i = 0; i < 2; i++) {
 						if (this->find(key_new)->interchanges[i] != "") {
-							more_than_one = true;
+							interchange_validation_counter++;
 						}
 					}
-					if (more_than_one == true) {
+					if (interchange_validation_counter >= 2) {
 						cout << "Station has too many interchanges" << endl;
-						break;
+						continue;
 					}
 					interchanges[interchange_count] = key_new;
 					interchange_count++;
