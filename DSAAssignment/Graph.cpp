@@ -92,6 +92,7 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 	n->item = newItem;
 	n->previous = NULL;
 	n->next = NULL;
+
 	if (items[hash] == NULL) {
 		items[hash] = n;
 		size += 1;
@@ -125,10 +126,11 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 	}
 }
 
-bool Graph::add(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext) {
+bool Graph::add(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext,string interchanges[2]) {
 	int hash = this->hash(newKey);
 	int Priority = stoi(this->priority(newKey));
 	Node *n = new Node;
+	Node* other_interchange = new Node;
 	n->key = newKey;
 	n->priority = Priority;
 	n->item = newItem;
@@ -136,6 +138,27 @@ bool Graph::add(KeyType newKey, ItemType newItem, int distancePrev, int distance
 	n->distanceNext;
 	n->previous = NULL;
 	n->next = NULL;
+
+	for (int i = 0; i < 2; i++) {
+		n->interchanges[i] = interchanges[i];
+	}
+	for (int i = 0; i < 2; i++) {
+		if (interchanges[i] == "") {
+			continue;
+		}
+		else {
+			other_interchange = this->find(interchanges[i]);
+			for (int j = 0; j < 2; j++) {
+				if (other_interchange->interchanges[j] == "") {
+					other_interchange->interchanges[j] = newKey;
+					break;
+				}
+			}
+		}
+	}
+	string interchanges_list[2] = { interchanges[0], interchanges[1] };
+	this->addInterchanges(interchanges);
+
 	if (items[hash] == NULL) {
 		items[hash] = n;
 		size += 1;
@@ -792,69 +815,94 @@ void Graph::displayRoute(KeyType start, KeyType end, string route[100], int rout
 		}
 	}
 }
-void Graph::addLine() {
-	cout << "what station prefix do u want for this new line: ";
-	string prefix;
-	getline(cin, prefix);
-	while (true) {
-		cout << "what number is this station: ";
-		string number;
-		getline(cin, number);
-		string stationNo = prefix + number;
-		cout << stationNo << endl;
-		cout << "Is this station an Interchange (Yes/No): ";
-		string interchange;
-		getline(cin, interchange);
-		if (interchange == "Yes") {
-			cout << "which station is it an interchange with: ";
-			string station;
-			getline(cin, station);
-		}
-		else {
-			cout << "What is the name of the Station: ";
-			string name;
-			getline(cin, name);
-			cout << "Is this a terminal Station? (Yes/No) : ";
-			string isterminal;
-			getline(cin, isterminal);
-			string distancenext;
-			string distanceprev;
-			int Distancenext;
-			int Distanceprev;
-			if (isterminal == "Yes") {
-				cout << "Which direction? (Start/End) : ";
-				string whatdirection;
-				getline(cin, whatdirection);
-				if (whatdirection == "Start") {
-					cout << "distance to Next Station: ";
-
-					getline(cin, distancenext);
-					Distancenext = stoi(distancenext);
-					Distanceprev = 0;
-				}
-				else if (whatdirection == "End") {
-					cout << "distance to Previous Station: ";
-
-					getline(cin, distanceprev);
-					Distanceprev = stoi(distanceprev);
-					Distancenext = 0;
-				}
-			}
-			else if (isterminal == "No") {
-				cout << "distance to Next: ";
-				getline(cin, distancenext);
-				Distancenext = stoi(distancenext);
-				cout << "distance to Previous Station: ";
-				getline(cin, distanceprev);
-				Distanceprev = stoi(distanceprev);
-			}
-			this->add(stationNo, name, Distancenext, Distanceprev);
-		}
-		cout << "do you want to add another station (Yes/No): ";
-		string choice;
-		getline(cin, choice);
-		if (choice == "No") {
-			break;
-		}
-	}
-}
+//void Graph::addLine() {
+//	cout << "what station prefix do u want for this new line: ";
+//	string prefix;
+//	getline(cin, prefix);
+//	while (true) {
+//		cout << "what number is this station: ";
+//		string number;
+//		getline(cin, number);
+//		string stationNo = prefix + number;
+//		cout << stationNo << endl;
+//		cout << "Is this station an Interchange (Yes/No): ";
+//		string interchange;
+//		getline(cin, interchange);
+//		string interchanges[2];
+//		if (interchange == "Yes") {
+//			
+//			bool more_than_one = false;
+//			bool getting_interchange = true;
+//			int interchange_count = 0;
+//
+//			while (getting_interchange) {
+//				cout << "Provide station number that is an interchange with this station (Type ""No"" to exit): ";
+//				string key;
+//				getline(cin, key);
+//				if (key == "No" || interchange_count > 3) {
+//					getting_interchange = false;
+//				}
+//				else if (this->find(key) != NULL) {
+//					for (int i = 0; i < 2; i++) {
+//						if (this->find(key)->interchanges[i] != "") {
+//							more_than_one = true;
+//						}
+//					}
+//					if (more_than_one == true) {
+//						cout << "Station has too many interchanges" << endl;
+//						break;
+//					}
+//					interchanges[interchange_count] = key;
+//					interchange_count++;
+//				}
+//
+//			}
+//		}
+//		else {
+//			cout << "What is the name of the Station: ";
+//			string name;
+//			getline(cin, name);
+//			cout << "Is this a terminal Station? (Yes/No) : ";
+//			string isterminal;
+//			getline(cin, isterminal);
+//			string distancenext;
+//			string distanceprev;
+//			int Distancenext;
+//			int Distanceprev;
+//			if (isterminal == "Yes") {
+//				cout << "Which direction? (Start/End) : ";
+//				string whatdirection;
+//				getline(cin, whatdirection);
+//				if (whatdirection == "Start") {
+//					cout << "distance to Next Station: ";
+//
+//					getline(cin, distancenext);
+//					Distancenext = stoi(distancenext);
+//					Distanceprev = 0;
+//				}
+//				else if (whatdirection == "End") {
+//					cout << "distance to Previous Station: ";
+//
+//					getline(cin, distanceprev);
+//					Distanceprev = stoi(distanceprev);
+//					Distancenext = 0;
+//				}
+//			}
+//			else if (isterminal == "No") {
+//				cout << "distance to Next: ";
+//				getline(cin, distancenext);
+//				Distancenext = stoi(distancenext);
+//				cout << "distance to Previous Station: ";
+//				getline(cin, distanceprev);
+//				Distanceprev = stoi(distanceprev);
+//			}
+//			this->add(stationNo, name, Distancenext, Distanceprev,interchanges);
+//		}
+//		cout << "do you want to add another station (Yes/No): ";
+//		string choice;
+//		getline(cin, choice);
+//		if (choice == "No") {
+//			break;
+//		}
+//	}
+//}
