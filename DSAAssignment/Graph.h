@@ -24,6 +24,7 @@ private:
 	};
 	Node *items[MAX_SIZE];
 	int size;
+	float fares[16];
 
 public:
 	Graph();
@@ -39,8 +40,8 @@ public:
 	void CalculateFare(int distance_travelled);
 	string priority(KeyType key);
 	bool add(KeyType newKey, ItemType newItem);
-	bool add(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext, string interchanges[2]);
-	bool addWrite(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext, string interchanges[2]);
+	bool add(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext,string interchanges[3]);
+	bool addWrite(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext, string interchanges[3]);
 	void getLine(KeyType key);
 	void addLine();
 	void addInterchanges(string interchanges[3]);
