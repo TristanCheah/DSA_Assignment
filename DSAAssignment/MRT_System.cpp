@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Graph.h"
+#include "MRT_System.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -28,39 +28,36 @@ char isno(char c) {
 
 }
 
-Graph::Graph() {
+MRT_System::MRT_System() {
 	for (int i = 0; i < MAX_SIZE; i++) {
 		items[i] = NULL;
 	}
 	size = 0;
 }
 
-Graph::~Graph()
+MRT_System::~MRT_System()
 {
 }
-void Graph::generate_graph() {
-	
-}
 
-int Graph::hash(KeyType key) {
+int MRT_System::hash(KeyType key) {
 	int hash = 0;
 	for (int i = 0; i <key.length(); i++) {
 		double p = pow(26, i);
 		int val = (int)p;
 		hash += charvalue(key[i]) * val; //(int) pow(26.0,i);
-		//cout << hash<<endl;
+										 //cout << hash<<endl;
 	}
 	hash = hash % MAX_SIZE;
 	return hash;
 }
-string Graph::priority(KeyType key) {
+string MRT_System::priority(KeyType key) {
 	string numbers;
 	for (int i = 0; i < key.length(); i++) {
 		stringstream ss;
 		ss << key[i];
 		string temp;
 		int number;
-		
+
 		while (!ss.eof()) {
 			ss >> temp;
 			if (stringstream(temp) >> number) {
@@ -83,7 +80,7 @@ string Graph::priority(KeyType key) {
 	//return no;
 }
 
-bool Graph::add(KeyType newKey, ItemType newItem) {
+bool MRT_System::add(KeyType newKey, ItemType newItem) {
 	int hash = this->hash(newKey);
 	int Priority = stoi(this->priority(newKey));
 	Node *n = new Node;
@@ -126,7 +123,7 @@ bool Graph::add(KeyType newKey, ItemType newItem) {
 	}
 }
 
-bool Graph::add(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext, string interchanges[3]) {
+bool MRT_System::add(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext, string interchanges[3]) {
 	int hash = this->hash(newKey);
 	int Priority = stoi(this->priority(newKey));
 	Node *n = new Node;
@@ -192,7 +189,7 @@ bool Graph::add(KeyType newKey, ItemType newItem, int distancePrev, int distance
 	}
 }
 
-void Graph::addInterchanges(string interchanges[3]) {
+void MRT_System::addInterchanges(string interchanges[3]) {
 	for (int i = 0; i < 3; i++) {
 		if (this->find(interchanges[i]) != NULL) {
 			Node* interchange_node = this->find(interchanges[i]);
@@ -204,7 +201,7 @@ void Graph::addInterchanges(string interchanges[3]) {
 		}
 	}
 }
-bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int distanceNext, string interchanges[3]) {
+bool MRT_System::addWrite(KeyType newKey, ItemType newItem, int distancePrev, int distanceNext, string interchanges[3]) {
 	int hash = this->hash(newKey);
 	int Priority = stoi(this->priority(newKey));
 	Node *n = new Node;
@@ -217,7 +214,7 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int dist
 	n->distanceNext = distanceNext;
 	n->previous = NULL;
 	for (int i = 0; i < 2; i++) {
-		n->interchanges[i] = interchanges[i];	
+		n->interchanges[i] = interchanges[i];
 	}
 	for (int i = 0; i < 2; i++) {
 		if (interchanges[i] == "") {
@@ -232,8 +229,8 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int dist
 				}
 			}
 		}
-	}	
-		
+	}
+
 	addInterchanges(interchanges);
 
 	if (items[hash] == NULL) {
@@ -251,12 +248,12 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int dist
 		while (current->next != NULL) {
 			if (current->next->priority > n->priority) {
 				n->next = current->next;
-				n->previous = current;				
+				n->previous = current;
 				current->next = n;
 				n->next->previous = n;
 				n->previous->distanceNext = n->distancePrev;
 				n->next->distancePrev = n->distanceNext;
-				
+
 				this->write();
 				return true;
 			}
@@ -275,7 +272,7 @@ bool Graph::addWrite(KeyType newKey, ItemType newItem, int distancePrev,int dist
 	}
 }
 
-void Graph::getLine(KeyType key) {
+void MRT_System::getLine(KeyType key) {
 	string upperkey;
 	for (int i = 0; i < key.length(); i++) {
 		upperkey += toupper(key[i]);
@@ -290,7 +287,7 @@ void Graph::getLine(KeyType key) {
 	if (items[hash] != NULL) {
 		Node* current = items[hash];
 		linelet = current->key;
-		
+
 		for (int i = 0; i < linelet.length(); i++) {
 			if (isalpha(linelet[i])) {
 				upperll += toupper(linelet[i]);
@@ -316,7 +313,7 @@ void Graph::getLine(KeyType key) {
 	//return output;
 }
 
-void Graph::displayStationInfo(string station_name) {
+void MRT_System::displayStationInfo(string station_name) {
 	KeyType key;
 	int indexes_to_iterate[MAX_SIZE] = {};
 	int counter = 0;
@@ -375,7 +372,7 @@ void Graph::displayStationInfo(string station_name) {
 		}
 	}
 }
-void Graph::readCSV() {
+void MRT_System::readCSV() {
 	ifstream file;
 	file.open("Stations.csv");
 	if (file.is_open()) {
@@ -415,7 +412,7 @@ void Graph::readCSV() {
 					station_key_array[array_count] = word;
 					array_count += 1;
 				}
-				else if(count == 1){
+				else if (count == 1) {
 					distance_array[array_count] = stoi(word);
 					array_count += 1;
 				}
@@ -425,12 +422,12 @@ void Graph::readCSV() {
 			}
 			else {
 				int iterative_count = 0;
-				while (station_key_array[iterative_count + 1] != ""){
+				while (station_key_array[iterative_count + 1] != "") {
 					Node* station1 = this->find(station_key_array[iterative_count]);
 					Node* station2 = this->find(station_key_array[iterative_count + 1]);
 
 					int distance = distance_array[iterative_count];
-					
+
 					station1->distanceNext = distance;
 					station2->distancePrev = distance;
 					/*cout << station2->item + " : " << station2->distancePrev << endl;*/
@@ -438,19 +435,19 @@ void Graph::readCSV() {
 				}
 				/*Node* station1 = this->find(station_key_array[iterative_count]);
 				if (this->find(station_key_array[iterative_count + 1]) == NULL) {
-					station1->distancePrev = distance_array[iterative_count];
+				station1->distancePrev = distance_array[iterative_count];
 				}*/
 				count = 0;
 				std::fill(distance_array, distance_array + array_count, 0);
 				for (int i = 0; i < array_count + 1; i++) {
 					station_key_array[i].clear();
-					
-				}			
+
+				}
 			}
 		}
-	}	
+	}
 }
-Graph::Node* Graph::find(KeyType key) {
+MRT_System::Node* MRT_System::find(KeyType key) {
 	if (key == "") {
 		return NULL;
 	}
@@ -476,7 +473,7 @@ Graph::Node* Graph::find(KeyType key) {
 
 }
 
-void Graph::generateInterchanges() {
+void MRT_System::generateInterchanges() {
 	ifstream file;
 	file.open("Interchanges.csv");
 	if (file.is_open()) {
@@ -492,20 +489,20 @@ void Graph::generateInterchanges() {
 				count++;
 				//find hash record, add to interchanges
 			}
-			for (int i = 0; i < count; i++) {	
+			for (int i = 0; i < count; i++) {
 				int key_count = 0;
-				for (int k = 0; k < count; k++) {					
+				for (int k = 0; k < count; k++) {
 					if (keys_to_add[k] != this->find(keys_to_add[i])->key) {
 						this->find(keys_to_add[i])->interchanges[key_count] = keys_to_add[k];
 						key_count++;
-					}		
-					
-				}				
+					}
+
+				}
 			}
 		}
 	}
 }
-void Graph::print() {
+void MRT_System::print() {
 	for (int i = 0; i < MAX_SIZE; i++) {
 		Node* current = new Node;
 		if (items[i] != NULL) {
@@ -533,19 +530,19 @@ void Graph::print() {
 				else {
 					cout << "Terminal station" << endl;
 				}
-				
 
 
-				
-				
-				
+
+
+
+
 				current = current->next;
 			}
 		}
 	}
 }
 
-void Graph::write() {
+void MRT_System::write() {
 	ofstream file;
 	//remove("Stations.csv");
 	file.open("Stations.csv");
@@ -555,8 +552,8 @@ void Graph::write() {
 			if (items[i] != NULL) {
 				current = items[i];
 				while (current != NULL) {
-					file << current->key+",";
-					file << current->item+"\n";
+					file << current->key + ",";
+					file << current->item + "\n";
 					current = current->next;
 				}
 			}
@@ -579,12 +576,12 @@ void Graph::write() {
 					if (current->distanceNext > 0) {
 						distance += to_string(current->distanceNext) + ",";
 					}
-					
+
 					current = current->next;
 				}
 				stationNo += "\n";
 				distance += "\n";
-				
+
 				file << stationNo;
 				file << distance;
 				stationNo = "";
@@ -596,15 +593,15 @@ void Graph::write() {
 
 	file.open("Interchanges.csv");
 	string interchange;
-	if (file.is_open()) 
+	if (file.is_open())
 	{
-		for (int i = 0; i < MAX_SIZE; i++) 
+		for (int i = 0; i < MAX_SIZE; i++)
 		{
 			Node* current = new Node;
-			if (items[i] != NULL) 
+			if (items[i] != NULL)
 			{
 				current = items[i];
-				while (current != NULL) 
+				while (current != NULL)
 				{
 					if (current->interchanges[0] != "" && interchange.find(current->key) == std::string::npos) {
 						if (current->interchanges[0] != "") {
@@ -614,17 +611,17 @@ void Graph::write() {
 							interchange += current->interchanges[1] + ",";
 						}
 						interchange += current->key + "\n";
-						
+
 					}
 					current = current->next;
 				}
-				
+
 			}
 		}
 		file << interchange;
 	}
 }
-string Graph::get_station_prefix(string station_no) {
+string MRT_System::get_station_prefix(string station_no) {
 	string station_prefix;
 	for (int i = 0; i < station_no.length(); i++) {
 		stringstream ss;
@@ -635,7 +632,7 @@ string Graph::get_station_prefix(string station_no) {
 		while (!ss.eof()) {
 			ss >> temp;
 			if (stringstream(temp) >> number) {
-				
+
 			}
 			else {
 				station_prefix += temp;
@@ -646,20 +643,20 @@ string Graph::get_station_prefix(string station_no) {
 	return station_prefix;
 }
 
-void Graph::CalculateFare(int distance_travelled) {
-	
-	cout << to_string(distance_travelled) <<endl;
+void MRT_System::CalculateFare(int distance_travelled) {
+
+	//cout << to_string(distance_travelled) << endl;
 	for (int i = 14; i > -1; i -= 2) {
-		cout << to_string(fares[i]) << endl;
-		if (distance_travelled/1000 > this->fares[i]) {
+		//cout << to_string(fares[i]) << endl;
+		if (distance_travelled / 1000 > this->fares[i]) {
 			cout << "\nYour fare is $" << this->fares[i + 1] / 100 << endl;
 			return;
 		}
 	}
 	cout << "\nYour fare is $" << fares[1] / 100 << endl;
 }
-void Graph::LoadFares() {
-	
+void MRT_System::LoadFares() {
+
 	ifstream file;
 	file.open("Fares.csv");
 	if (file.is_open()) {
@@ -687,8 +684,8 @@ void Graph::LoadFares() {
 	}
 	file.close();
 }
-void Graph::displayRoute(KeyType start, KeyType end, string route[100], int route_length, float distance) {
-	
+void MRT_System::displayRoute(KeyType start, KeyType end, string route[100], int route_length, float distance) {
+
 	Node* start_node = this->find(start);
 	Node* end_node = this->find(end);
 	if (start_node == NULL) {
@@ -705,18 +702,18 @@ void Graph::displayRoute(KeyType start, KeyType end, string route[100], int rout
 	string start_prefix = get_station_prefix(start);
 	string end_prefix = get_station_prefix(end);
 	int prev_route_len = route_length;
-	
+
 	if (start_prefix == end_prefix) {
 
 		Node* current = start_node;
 		route[route_length] = start_node->item + " (" + start_node->key + ") ";
 		route_length++;
 
-		
+
 		while (current->next != NULL)
 		{
 			if (current->key == end) {
-				
+
 				for (int i = 0; i < 100; i++) {
 					if (route[i] == "") {
 						CalculateFare(distance);
@@ -728,17 +725,21 @@ void Graph::displayRoute(KeyType start, KeyType end, string route[100], int rout
 
 					cout << route[i];
 				}
-				
+
 			}
-			distance += current->distanceNext;
-			current = current->next;			
+			if (current->distanceNext > 0) {
+				distance += current->distanceNext;
+			}
+			current = current->next;
 			route[route_length] = current->item + " (" + current->key + ") ";
 			route_length++;
 
 		}
 		//if reach terminal
 		if (current->key == end) {
-			distance += current->distanceNext;
+			if (current->distanceNext > 0) {
+				distance += current->distanceNext;
+			}
 			for (int i = 0; i < 100; i++) {
 				if (route[i] == "") {
 					CalculateFare(distance);
@@ -761,7 +762,7 @@ void Graph::displayRoute(KeyType start, KeyType end, string route[100], int rout
 		route_length++;
 		current = start_node;
 		//for other dir
-		while (current->previous != NULL) {
+		while (current->previous > 0) {
 			if (current->key == end) {
 				for (int i = 0; i < 100; i++) {
 					if (route[i] == "") {
@@ -775,18 +776,23 @@ void Graph::displayRoute(KeyType start, KeyType end, string route[100], int rout
 					cout << route[i];
 
 				}
-				
+
 			}
-			distance += current->distancePrev;
+			if (current->distancePrev > 0) {
+				distance += current->distancePrev;
+			}
 			current = current->previous;
 			route[route_length] = current->item + " (" + current->key + ") ";
 			route_length++;
 		}
-		
+
 		if (current->key == end) {
-			distance = current->distancePrev;
+			if (current->distancePrev > 0) {
+				distance = current->distancePrev;
+			}
 			for (int i = 0; i < 100; i++) {
 				if (route[i] == "") {
+					CalculateFare(distance);
 					return;
 				}
 				if (i != 0) {
@@ -807,7 +813,7 @@ void Graph::displayRoute(KeyType start, KeyType end, string route[100], int rout
 					string interchange_prefix = get_station_prefix(current->interchanges[i]);
 					if (interchange_prefix == end_prefix) {
 						Node* new_start = this->find(current->key);
-						
+
 						displayRoute(new_start->interchanges[i], end, route, route_length, distance);
 						return;
 					}
@@ -870,7 +876,7 @@ void Graph::displayRoute(KeyType start, KeyType end, string route[100], int rout
 
 	}
 }
-//void Graph::addLine() {
+//void MRT_System::addLine() {
 //	cout << "what station prefix do u want for this new line: ";
 //	string prefix;
 //	getline(cin, prefix);
