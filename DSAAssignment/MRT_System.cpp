@@ -823,7 +823,7 @@ void MRT_System::displayRoute(KeyType start, KeyType end, string route[100], int
 					}
 				}
 			}
-			distance = current->distanceNext;
+			distance += current->distanceNext;
 			current = current->next;
 			route[route_length] = current->item + " (" + current->key + ") ";
 			route_length++;
@@ -860,7 +860,7 @@ void MRT_System::displayRoute(KeyType start, KeyType end, string route[100], int
 					}
 				}
 			}
-			distance = current->distancePrev;
+			distance += current->distancePrev;
 			current = current->previous;
 			route[route_length] = current->item + " (" + current->key + ") ";
 			route_length++;
