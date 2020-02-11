@@ -408,13 +408,15 @@ void MRT_System::readCSV() {
 			std::stringstream s_stream(word);
 			int array_count = 0;
 			while (getline(s_stream, word, ',')) {
-				if (count == 0) {
-					station_key_array[array_count] = word;
-					array_count += 1;
-				}
-				else if (count == 1) {
-					distance_array[array_count] = stoi(word);
-					array_count += 1;
+				if (word != "") {//demo data fix
+					if (count == 0) {
+						station_key_array[array_count] = word;
+						array_count += 1;
+					}
+					else if (count == 1) {
+						distance_array[array_count] = stoi(word);
+						array_count += 1;
+					}
 				}
 			}
 			if (count == 0) {
@@ -479,7 +481,7 @@ void MRT_System::generateInterchanges() {
 	if (file.is_open()) {
 		string key;
 		while (!file.eof()) {
-			string keys_to_add[3];
+			string keys_to_add[5]; //demo fix
 			string row;
 			int count = 0;
 			getline(file, row);
@@ -646,7 +648,7 @@ string MRT_System::get_station_prefix(string station_no) {
 void MRT_System::CalculateFare(int distance_travelled) {
 
 	//cout << to_string(distance_travelled) << endl;
-	for (int i = 14; i > -1; i -= 2) {
+	for (int i = FARES_NUM - 2; i > -1; i -= 2) {//fix for demo day
 		//cout << to_string(fares[i]) << endl;
 		if (distance_travelled / 1000 > this->fares[i]) {
 			cout << "\nYour fare is $" << this->fares[i + 1] / 100 << endl;
@@ -670,14 +672,16 @@ void MRT_System::LoadFares() {
 			std::stringstream s_stream(row);
 			int count = 0;
 			while (getline(s_stream, word, ',')) {
-				if (count == 0) {
-					this->fares[row_count] = stof(word);
-					row_count++;
-					count++;
-				}
-				else {
-					this->fares[row_count] = stof(word);
-					row_count++;
+				if (word != "") {//demo fix
+					if (count == 0) {
+						this->fares[row_count] = stof(word);
+						row_count++;
+						count++;
+					}
+					else {
+						this->fares[row_count] = stof(word);
+						row_count++;
+					}
 				}
 			}
 		}

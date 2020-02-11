@@ -3,7 +3,8 @@ using namespace std;
 #include <string>
 
 const int MAX_SIZE = 676;
-const int MAX_INTERCHANGES = 2;
+const int MAX_INTERCHANGES = 4; //demo data fix
+const int FARES_NUM = 10;//demo data fix
 typedef string ItemType;
 typedef string KeyType;
 typedef int PriorityType;
@@ -23,7 +24,7 @@ private:
 	};
 	Node *items[MAX_SIZE];
 	int size;
-	float fares[16];
+	float fares[FARES_NUM];
 
 public:
 	MRT_System();
